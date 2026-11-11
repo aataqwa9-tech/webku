@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathSMA AI - Solusi & Penjelasan Matematika SMA</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- MathJax for rendering math formulas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .math-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #3b82f6;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white text-xl font-bold shadow-md shadow-brand-500/20">
+                    <i class="fa-solid font-mono">f(x)</i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-none text-slate-900">MathSMA <span class="text-brand-600">AI</span></h1>
+                    <p class="text-xs text-slate-500 font-medium">Solusi & Penjelasan Langkah demi Langkah SMA</p>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <nav class="flex space-x-1 sm:space-x-2 bg-slate-100 p-1 rounded-xl text-sm font-medium">
+                <button onclick="switchTab('ai-solver')" id="tab-ai-solver" class="tab-btn px-3 sm:px-4 py-1.5 rounded-lg text-brand-700 bg-white shadow-sm flex items-center gap-2 transition">
+                    <i class="fa-solid fa-wand-magic-sparkles text-brand-600"></i>
+                    <span>Tanya AI</span>
+                </button>
+                <button onclick="switchTab('calculators')" id="tab-calculators" class="tab-btn px-3 sm:px-4 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-2 transition">
+                    <i class="fa-solid fa-calculator"></i>
+                    <span>Kalkulator Rumus</span>
+                </button>
+                <button onclick="switchTab('cheat-sheet')" id="tab-cheat-sheet" class="tab-btn px-3 sm:px-4 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-2 transition">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Ringkasan SMA</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- TAB 1: AI SOLVER -->
+        <section id="sec-ai-solver" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <!-- Left Column: Input Soal & Topic Quick Select -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                        <div class="flex items-center justify-between mb-3">
+                            <h2 class="font-semibold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-pen-to-square text-brand-600"></i> Input Soal Matematika
+                            </h2>
+                            <span class="text-xs bg-brand-50 text-brand-700 font-semibold px-2.5 py-1 rounded-full border border-brand-100">AI Powered</span>
+                        </div>
+
+                        <!-- Topics Chips -->
+                        <div class="mb-4">
+                            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Pilih Topik Soal:</p>
+                            <div class="flex flex-wrap gap-1.5" id="topic-chips">
+                                <button onclick="selectTopic('Persamaan Kuadrat')" class="chip px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-slate-700 transition">Persamaan Kuadrat</button>
+                                <button onclick="selectTopic('Trigonometri')" class="chip px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-slate-700 transition">Trigonometri</button>
+                                <button onclick="selectTopic('Matriks')" class="chip px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-slate-700 transition">Matriks</button>
+                                <button onclick="selectTopic('Turunan & Integral')" class="chip px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-slate-700 transition">Kalkulus</button>
+                                <button onclick="selectTopic('Vektor')" class="chip px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-slate-700 transition">Vektor</button>
+                                <button onclick="selectTopic('Statistika')" class="chip px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-slate-700 transition">Statistika</button>
+                            </div>
+                        </div>
+
+                        <!-- Textarea Soal -->
+                        <div class="relative mb-3">
+                            <textarea id="question-input" rows="5" class="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 transition resize-none" placeholder="Ketik atau tempel soal matematika SMA Anda di sini...&#10;Contoh: Tentukan akar-akar dari persamaan x^2 - 5x + 6 = 0 beserta langkah penyelesaiannya."></textarea>
+                        </div>
+
+                        <!-- Quick Symbols Bar -->
+                        <div class="mb-4 flex items-center gap-1 overflow-x-auto pb-1 text-xs text-slate-600">
+                            <span class="text-slate-400 text-xs font-semibold pr-1">Simbol:</span>
+                            <button onclick="insertSymbol('x^2')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded border border-slate-200 font-mono">x²</button>
+                            <button onclick="insertSymbol('√')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded border border-slate-200 font-mono">√</button>
+                            <button onclick="insertSymbol('∫')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded border border-slate-200 font-mono">∫</button>
+                            <button onclick="insertSymbol('lim_{x→0}')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded border border-slate-200 font-mono">lim</button>
+                            <button onclick="insertSymbol('sin(x)')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded border border-slate-200 font-mono">sin</button>
+                            <button onclick="insertSymbol('cos(x)')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded border border-slate-200 font-mono">cos</button>
+                            <button onclick="insertSymbol('π')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded border border-slate-200 font-mono">π</button>
+                            <button onclick="insertSymbol('θ')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded border border-slate-200 font-mono">θ</button>
+                            <button onclick="insertSymbol('dy/dx')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded border border-slate-200 font-mono">dy/dx</button>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex gap-2">
+                            <button onclick="solveQuestion()" id="solve-btn" class="flex-1 bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-medium py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-sm transition">
+                                <i class="fa-solid fa-sparkles"></i>
+                                <span>Selesaikan Soal</span>
+                            </button>
+                            <button onclick="clearQuestion()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-2.5 rounded-xl transition" title="Bersihkan">
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Contoh Soal Cepat -->
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                        <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Contoh Soal Latihan SMA</h3>
+                        <div class="space-y-1.5 text-xs">
+                            <button onclick="loadExample(1)" class="w-full text-left p-2 rounded-lg hover:bg-slate-50 text-slate-700 flex justify-between items-center border border-transparent hover:border-slate-200 transition">
+                                <span>1. Integralkan \(\int (3x^2 + 4x - 5) \, dx\)</span>
+                                <i class="fa-solid fa-chevron-right text-slate-400 text-[10px]"></i>
+                            </button>
+                            <button onclick="loadExample(2)" class="w-full text-left p-2 rounded-lg hover:bg-slate-50 text-slate-700 flex justify-between items-center border border-transparent hover:border-slate-200 transition">
+                                <span>2. Tentukan turunan pertama dari \(f(x) = (2x + 3)^4\)</span>
+                                <i class="fa-solid fa-chevron-right text-slate-400 text-[10px]"></i>
+                            </button>
+                            <button onclick="loadExample(3)" class="w-full text-left p-2 rounded-lg hover:bg-slate-50 text-slate-700 flex justify-between items-center border border-transparent hover:border-slate-200 transition">
+                                <span>3. Carilah matriks invers dari \(A = \begin{pmatrix} 4 & 2 \\ 3 & 1 \end{pmatrix}\)</span>
+                                <i class="fa-solid fa-chevron-right text-slate-400 text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: AI Output / Step-by-Step Explanation -->
+                <div class="lg:col-span-7">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm min-h-[480px] flex flex-col justify-between" id="solution-container">
+                        
+                        <!-- Placeholder State -->
+                        <div id="solution-placeholder" class="my-auto text-center py-12 px-4">
+                            <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+                            <h3 class="text-slate-800 font-semibold text-base mb-1">Siap Membantu Belajar Matematika SMA</h3>
+                            <p class="text-slate-500 text-sm max-w-md mx-auto">
+                                Tuliskan soal matematika kamu di kolom sebelah kiri. AI akan memberikan jawaban lengkap beserta penjelasan langkah demi langkah & rumus yang digunakan.
+                            </p>
+                        </div>
+
+                        <!-- Loading State -->
+                        <div id="solution-loading" class="hidden my-auto text-center py-16">
+                            <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-brand-600 border-t-transparent mb-4"></div>
+                            <p class="text-slate-700 font-medium text-sm">Menganalisis soal & menyusun langkah penyelesaian...</p>
+                            <p class="text-xs text-slate-400 mt-1">Menggunakan model kecerdasan buatan Gemini AI</p>
+                        </div>
+
+                        <!-- Content State -->
+                        <div id="solution-content" class="hidden space-y-6">
+                            <!-- Topic Badge & Status -->
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                <span id="res-topic" class="text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full flex items-center gap-1.5">
+                                    <i class="fa-solid fa-circle-check text-[10px]"></i> Solusi Ditemukan
+                                </span>
+                                <button onclick="copySolution()" class="text-xs text-slate-500 hover:text-brand-600 flex items-center gap-1 transition">
+                                    <i class="fa-regular fa-copy"></i> Salin Penjelasan
+                                </button>
+                            </div>
+
+                            <!-- Formatted Output Content -->
+                            <div id="solution-body" class="prose prose-slate max-w-none text-slate-800 text-sm space-y-4">
+                                <!-- Dynamic JS Injection -->
+                            </div>
+                        </div>
+
+                        <!-- Footer Info -->
+                        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+                            <span><i class="fa-solid fa-shield-halved mr-1"></i> Verifikasi Hasil Jawaban</span>
+                            <span>Kurikulum Merdeka / K13 SMA</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TAB 2: INTERACTIVE CALCULATORS -->
+        <section id="sec-calculators" class="hidden space-y-6">
+            <div class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">Kalkulator Spesialis Rumus SMA</h2>
+                    <p class="text-xs text-slate-500">Hitung cepat, presisi, dan lihat visualisasi grafis secara instan.</p>
+                </div>
+
+                <!-- Calculator Select Switcher -->
+                <div class="flex bg-slate-200/70 p-1 rounded-xl text-xs font-semibold text-slate-600 w-full md:w-auto overflow-x-auto">
+                    <button onclick="switchCalc('quadratic')" id="btn-calc-quadratic" class="calc-sub-btn px-4 py-2 rounded-lg bg-white text-brand-700 shadow-sm">Pers. Kuadrat</button>
+                    <button onclick="switchCalc('matrix')" id="btn-calc-matrix" class="calc-sub-btn px-4 py-2 rounded-lg hover:text-slate-900">Matriks (2x2)</button>
+                    <button onclick="switchCalc('trig')" id="btn-calc-trig" class="calc-sub-btn px-4 py-2 rounded-lg hover:text-slate-900">Trigonometri</button>
+                </div>
+            </div>
+
+            <!-- Sub Calc 1: Quadratic Calculator -->
+            <div id="calc-quadratic" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-900 text-base border-b pb-2">Bentuk Umum: \( ax^2 + bx + c = 0 \)</h3>
+                    
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nilai a</label>
+                            <input type="number" id="quad-a" value="1" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-center font-semibold text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nilai b</label>
+                            <input type="number" id="quad-b" value="-5" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-center font-semibold text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nilai c</label>
+                            <input type="number" id="quad-c" value="6" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-center font-semibold text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <button onclick="calculateQuadratic()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-xl transition shadow-sm">
+                        Hitung Akar & Grafik
+                    </button>
+
+                    <!-- Result Panel -->
+                    <div id="quad-result" class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 text-sm">
+                        <!-- JS populated -->
+                    </div>
+                </div>
+
+                <!-- Canvas Curve Graph -->
+                <div class="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center">
+                    <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 w-full text-left">Visualisasi Grafik Parabola \(y = ax^2 + bx + c\)</h4>
+                    <canvas id="quadCanvas" width="400" height="260" class="max-w-full border border-slate-100 rounded-xl bg-slate-950"></canvas>
+                </div>
+            </div>
+
+            <!-- Sub Calc 2: Matrix Calculator -->
+            <div id="calc-matrix" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-900 text-base border-b pb-2">Matriks 2x2: \( A = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \)</h3>
+                    
+                    <div class="grid grid-cols-2 gap-3 max-w-xs mx-auto p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                        <input type="number" id="mat-a" value="4" class="p-3 bg-white border border-slate-300 rounded-xl text-center font-bold text-base focus:ring-2 focus:ring-brand-500 focus:outline-none" placeholder="a">
+                        <input type="number" id="mat-b" value="2" class="p-3 bg-white border border-slate-300 rounded-xl text-center font-bold text-base focus:ring-2 focus:ring-brand-500 focus:outline-none" placeholder="b">
+                        <input type="number" id="mat-c" value="3" class="p-3 bg-white border border-slate-300 rounded-xl text-center font-bold text-base focus:ring-2 focus:ring-brand-500 focus:outline-none" placeholder="c">
+                        <input type="number" id="mat-d" value="1" class="p-3 bg-white border border-slate-300 rounded-xl text-center font-bold text-base focus:ring-2 focus:ring-brand-500 focus:outline-none" placeholder="d">
+                    </div>
+
+                    <button onclick="calculateMatrix()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-xl transition shadow-sm">
+                        Hitung Determinan & Invers
+                    </button>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3" id="matrix-result-container">
+                    <h4 class="font-semibold text-slate-900 border-b pb-2">Hasil Perhitungan Matriks</h4>
+                    <div id="matrix-result" class="text-sm space-y-3 text-slate-700">
+                        <p class="text-slate-400 italic">Tekan tombol "Hitung Determinan & Invers" untuk melihat hasil.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub Calc 3: Trigonometry Calculator -->
+            <div id="calc-trig" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-900 text-base border-b pb-2">Kalkulator Sudut Trigonometri</h3>
+                    
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Besar Sudut (\(\theta\)) dalam Derajat</label>
+                        <input type="number" id="trig-angle" value="30" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl font-bold text-base focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+
+                    <button onclick="calculateTrig()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-xl transition shadow-sm">
+                        Hitung Nilai Sin, Cos, Tan
+                    </button>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                    <h4 class="font-semibold text-slate-900 border-b pb-2">Nilai Fungsi Trigonometri</h4>
+                    <div id="trig-result" class="text-sm space-y-3 text-slate-700">
+                        <p class="text-slate-400 italic">Masukkan nilai sudut lalu klik hitung.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: CHEAT SHEET & FORMULAS -->
+        <section id="sec-cheat-sheet" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 mb-1">Ringkasan Rumus Penting SMA</h2>
+                <p class="text-xs text-slate-500 mb-6">Referensi cepat materi ujian matematika kelas X, XI, dan XII.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Card 1: Eksponen & Logaritma -->
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span class="text-xs font-bold text-brand-600 uppercase tracking-wider">Kelas X</span>
+                        <h3 class="font-bold text-slate-800">Eksponen & Logaritma</h3>
+                        <ul class="text-xs space-y-1.5 text-slate-600 font-mono">
+                            <li>• \(a^m \cdot a^n = a^{m+n}\)</li>
+                            <li>• \((a^m)^n = a^{m \cdot n}\)</li>
+                            <li>• \(^a\log(b \cdot c) = ^a\log b + ^a\log c\)</li>
+                            <li>• \(^a\log(b^n) = n \cdot ^a\log b\)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Card 2: Turunan (Diferensial) -->
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span class="text-xs font-bold text-brand-600 uppercase tracking-wider">Kelas XI</span>
+                        <h3 class="font-bold text-slate-800">Turunan Fungsi</h3>
+                        <ul class="text-xs space-y-1.5 text-slate-600 font-mono">
+                            <li>• \(f(x) = a x^n \implies f'(x) = a \cdot n x^{n-1}\)</li>
+                            <li>• Aturan Perkalian: \((u \cdot v)' = u'v + uv'\)</li>
+                            <li>• Aturan Pembagian: \(\left(\frac{u}{v}\right)' = \frac{u'v - uv'}{v^2}\)</li>
+                            <li>• Turunan Trigonometri: \(\frac{d}{dx}(\sin x) = \cos x\)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Card 3: Integral -->
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span class="text-xs font-bold text-brand-600 uppercase tracking-wider">Kelas XI / XII</span>
+                        <h3 class="font-bold text-slate-800">Integral Tak Tentu</h3>
+                        <ul class="text-xs space-y-1.5 text-slate-600 font-mono">
+                            <li>• \(\int x^n \, dx = \frac{1}{n+1} x^{n+1} + C\)</li>
+                            <li>• \(\int a \, dx = ax + C\)</li>
+                            <li>• Integral Substitusi: \(\int f(g(x)) g'(x) dx\)</li>
+                            <li>• \(\int \cos x \, dx = \sin x + C\)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Card 4: Matriks -->
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span class="text-xs font-bold text-brand-600 uppercase tracking-wider">Kelas XI</span>
+                        <h3 class="font-bold text-slate-800">Matriks & Determinan</h3>
+                        <ul class="text-xs space-y-1.5 text-slate-600 font-mono">
+                            <li>• \(\det(A) = ad - bc\)</li>
+                            <li>• Invers: \(A^{-1} = \frac{1}{\det(A)} \begin{pmatrix} d & -b \\ -c & a \end{pmatrix}\)</li>
+                            <li>• \((AB)^{T} = B^T A^T\)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Card 5: Trigonometri Identitas -->
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span class="text-xs font-bold text-brand-600 uppercase tracking-wider">Kelas X / XI</span>
+                        <h3 class="font-bold text-slate-800">Identitas Trigonometri</h3>
+                        <ul class="text-xs space-y-1.5 text-slate-600 font-mono">
+                            <li>• \(\sin^2 x + \cos^2 x = 1\)</li>
+                            <li>• \(\sin(2x) = 2 \sin x \cos x\)</li>
+                            <li>• \(\cos(2x) = \cos^2 x - \sin^2 x\)</li>
+                            <li>• \(\tan x = \frac{\sin x}{\cos x}\)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Card 6: Statistika -->
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span class="text-xs font-bold text-brand-600 uppercase tracking-wider">Kelas XII</span>
+                        <h3 class="font-bold text-slate-800">Statistika Dasars</h3>
+                        <ul class="text-xs space-y-1.5 text-slate-600 font-mono">
+                            <li>• Rata-rata (\(\bar{x}\)): \(\frac{\sum x_i}{n}\)</li>
+                            <li>• Ragam/Varians (\(s^2\)): \(\frac{\sum (x_i - \bar{x})^2}{n}\)</li>
+                            <li>• Simpangan Baku: \(s = \sqrt{s^2}\)</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <p>© 2026 MathSMA AI - Teman Belajar Matematika SMA Indonesia</p>
+    </footer>
+
+    <!-- Application Script -->
+    <script>
+        // State management
+        let currentTopic = '';
+
+        // Tab Switching
+        function switchTab(tabId) {
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-brand-700', 'shadow-sm');
+                btn.classList.add('text-slate-600');
+            });
+
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.add('bg-white', 'text-brand-700', 'shadow-sm');
+            activeBtn.classList.remove('text-slate-600');
+
+            if (tabId === 'calculators') {
+                calculateQuadratic(); // Render initial canvas
+            }
+        }
+
+        // Sub Calculators Switcher
+        function switchCalc(calcType) {
+            document.getElementById('calc-quadratic').classList.add('hidden');
+            document.getElementById('calc-matrix').classList.add('hidden');
+            document.getElementById('calc-trig').classList.add('hidden');
+
+            document.querySelectorAll('.calc-sub-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-brand-700', 'shadow-sm');
+                btn.classList.add('hover:text-slate-900');
+            });
+
+            document.getElementById(`calc-${calcType}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`btn-calc-${calcType}`);
+            activeBtn.classList.add('bg-white', 'text-brand-700', 'shadow-sm');
+
+            if (calcType === 'quadratic') calculateQuadratic();
+        }
+
+        // Topic Selector
+        function selectTopic(topicName) {
+            currentTopic = topicName;
+            const input = document.getElementById('question-input');
+            if (!input.value.includes(`Topik: ${topicName}`)) {
+                input.value = `[${topicName}] ` + input.value;
+            }
+            input.focus();
+        }
+
+        // Symbol Insertion
+        function insertSymbol(symbol) {
+            const input = document.getElementById('question-input');
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const text = input.value;
+            input.value = text.substring(0, start) + symbol + text.substring(end);
+            input.focus();
+            input.selectionStart = input.selectionEnd = start + symbol.length;
+        }
+
+        function clearQuestion() {
+            document.getElementById('question-input').value = '';
+            document.getElementById('solution-placeholder').classList.remove('hidden');
+            document.getElementById('solution-content').classList.add('hidden');
+            document.getElementById('solution-loading').classList.add('hidden');
+        }
+
+        function loadExample(num) {
+            const input = document.getElementById('question-input');
+            if (num === 1) {
+                input.value = "Tentukan hasil integral tak tentu dari ∫(3x^2 + 4x - 5) dx beserta langkah penyelesaiannya.";
+            } else if (num === 2) {
+                input.value = "Tentukan turunan pertama dari fungsi f(x) = (2x + 3)^4 menggunakan aturan rantai.";
+            } else if (num === 3) {
+                input.value = "Carilah determinan dan matriks invers dari A = [[4, 2], [3, 1]].";
+            }
+            solveQuestion();
+        }
+
+        // GEMINI AI INTEGRATION
+        async function solveQuestion() {
+            const questionText = document.getElementById('question-input').value.trim();
+            if (!questionText) {
+                alert("Silakan masukkan soal matematika terlebih dahulu.");
+                return;
+            }
+
+            // UI State change
+            document.getElementById('solution-placeholder').classList.add('hidden');
+            document.getElementById('solution-content').classList.add('hidden');
+            document.getElementById('solution-loading').classList.remove('hidden');
+
+            const systemPrompt = `Anda adalah asisten guru matematika SMA terbaik di Indonesia. 
+Tugas Anda adalah menyelesaikan soal matematika SMA yang diberikan siswa dengan format penjelasan yang sangat terstruktur, jelas, dan mudah dipahami.
+Format balasan WAJIB menggunakan struktur HTML berikut (tanpa Markdown tag seperti \`\`\`html):
+
+<div class="space-y-4">
+    <div class="bg-brand-50 p-4 rounded-xl border border-brand-100">
+        <h4 class="font-bold text-brand-900 text-sm mb-1">📌 Ringkasan / Jawaban Akhir:</h4>
+        <p class="text-brand-700 font-semibold text-base">[Jawaban singkat & jelas disini]</p>
+    </div>
+
+    <div>
+        <h4 class="font-bold text-slate-800 mb-2">🔑 Rumus Utama yang Digunakan:</h4>
+        <div class="bg-slate-100 p-3 rounded-lg font-mono text-xs text-slate-700">
+            [Tuliskan rumus dalam format LaTeX seperti \\( a^2 + b^2 = c^2 \\)]
+        </div>
+    </div>
+
+    <div>
+        <h4 class="font-bold text-slate-800 mb-2">📝 Langkah Demi Langkah Penyelesaian:</h4>
+        <ol class="list-decimal list-inside space-y-2 text-slate-700 text-sm">
+            <li class="pl-1"><strong>Langkah 1:</strong> [Penjelasan langkah pertama]</li>
+            <li class="pl-1"><strong>Langkah 2:</strong> [Penjelasan langkah kedua]</li>
+            <li class="pl-1"><strong>Langkah 3:</strong> [Penjelasan langkah ketiga]</li>
+        </ol>
+    </div>
+
+    <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-amber-800">
+        💡 <strong>Tips SMA:</strong> [Catatan penting atau jebakan soal yang perlu dihindari saat ujian]
+    </div>
+</div>`;
+
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: `Selesaikan soal SMA ini: ${questionText}` }] }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (resultText) {
+                    document.getElementById('solution-body').innerHTML = resultText;
+                    document.getElementById('solution-loading').classList.add('hidden');
+                    document.getElementById('solution-content').classList.remove('hidden');
+
+                    // Re-render MathJax
+                    if (window.MathJax) {
+                        MathJax.typesetPromise([document.getElementById('solution-body')]);
+                    }
+                } else {
+                    throw new Error("Respon kosong");
+                }
+            } catch (error) {
+                document.getElementById('solution-loading').classList.add('hidden');
+                document.getElementById('solution-content').classList.remove('hidden');
+                document.getElementById('solution-body').innerHTML = `
+                    <div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                        <p class="font-bold mb-1">Gagal Terhubung ke AI Solver</p>
+                        <p class="text-xs">Terjadi kesalahan saat memproses jawaban. Silakan coba lagi nanti atau periksa koneksi internet Anda.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function copySolution() {
+            const bodyText = document.getElementById('solution-body').innerText;
+            navigator.clipboard.writeText(bodyText);
+            alert("Penjelasan jawaban telah disalin ke clipboard!");
+        }
+
+        // ================= CALCULATORS ENGINE ================= //
+
+        // 1. Quadratic Calculator & Canvas Renderer
+        function calculateQuadratic() {
+            const a = parseFloat(document.getElementById('quad-a').value) || 0;
+            const b = parseFloat(document.getElementById('quad-b').value) || 0;
+            const c = parseFloat(document.getElementById('quad-c').value) || 0;
+            const resDiv = document.getElementById('quad-result');
+
+            if (a === 0) {
+                resDiv.innerHTML = `<span class="text-red-500">Nilai 'a' tidak boleh nol (bukan persamaan kuadrat).</span>`;
+                return;
+            }
+
+            const D = (b * b) - (4 * a * c);
+            const xVertex = -b / (2 * a);
+            const yVertex = a * (xVertex * xVertex) + (b * xVertex) + c;
+
+            let rootsText = '';
+            if (D > 0) {
+                const x1 = (-b + Math.sqrt(D)) / (2 * a);
+                const x2 = (-b - Math.sqrt(D)) / (2 * a);
+                rootsText = `x₁ = <strong>${x1.toFixed(2)}</strong>, x₂ = <strong>${x2.toFixed(2)}</strong> (Akar Real Berbeda)`;
+            } else if (D === 0) {
+                const x1 = -b / (2 * a);
+                rootsText = `x₁ = x₂ = <strong>${x1.toFixed(2)}</strong> (Akar Kembar)`;
+            } else {
+                rootsText = `<span class="text-amber-600">Akar Imajiner / Irasional (D &lt; 0)</span>`;
+            }
+
+            resDiv.innerHTML = `
+                <p>Diskriminan (D): <strong class="font-mono font-bold">${D}</strong></p>
+                <p>Titik Puncak (Vertex): <strong>(${xVertex.toFixed(2)}, ${yVertex.toFixed(2)})</strong></p>
+                <p>Akar-akar: ${rootsText}</p>
+            `;
+
+            drawParabola(a, b, c, xVertex);
+        }
+
+        function drawParabola(a, b, c, xV) {
+            const canvas = document.getElementById('quadCanvas');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Draw grid & axes
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+
+            // X and Y axis center
+            const centerX = w / 2;
+            const centerY = h / 2;
+
+            ctx.beginPath();
+            ctx.moveTo(0, centerY); ctx.lineTo(w, centerY);
+            ctx.moveTo(centerX, 0); ctx.lineTo(centerX, h);
+            ctx.stroke();
+
+            // Draw Parabola curve
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+
+            const scale = 15; // scale factor
+            let isFirst = true;
+
+            for (let px = -w / 2; px <= w / 2; px += 2) {
+                const x = px / scale;
+                const y = a * x * x + b * x + c;
+                const canvasX = centerX + px;
+                const canvasY = centerY - (y * scale);
+
+                if (isFirst) {
+                    ctx.moveTo(canvasX, canvasY);
+                    isFirst = false;
+                } else {
+                    ctx.lineTo(canvasX, canvasY);
+                }
+            }
+            ctx.stroke();
+        }
+
+        // 2. Matrix Calculator (2x2)
+        function calculateMatrix() {
+            const a = parseFloat(document.getElementById('mat-a').value) || 0;
+            const b = parseFloat(document.getElementById('mat-b').value) || 0;
+            const c = parseFloat(document.getElementById('mat-c').value) || 0;
+            const d = parseFloat(document.getElementById('mat-d').value) || 0;
+
+            const det = (a * d) - (b * c);
+            const resDiv = document.getElementById('matrix-result');
+
+            let inverseHTML = '';
+            if (det !== 0) {
+                const invA = (d / det).toFixed(2);
+                const invB = (-b / det).toFixed(2);
+                const invC = (-c / det).toFixed(2);
+                const invD = (a / det).toFixed(2);
+
+                inverseHTML = `
+                    <div class="mt-2">
+                        <p class="font-semibold text-slate-800">Invers Matriks (A⁻¹):</p>
+                        <div class="inline-grid grid-cols-2 gap-2 p-3 bg-slate-100 rounded-xl font-mono text-center font-bold mt-1">
+                            <span class="bg-white p-1 rounded">${invA}</span>
+                            <span class="bg-white p-1 rounded">${invB}</span>
+                            <span class="bg-white p-1 rounded">${invC}</span>
+                            <span class="bg-white p-1 rounded">${invD}</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                inverseHTML = `<p class="text-red-500 font-medium">Matriks Singular (Determinan = 0), tidak memiliki invers.</p>`;
+            }
+
+            resDiv.innerHTML = `
+                <p>Determinan \\(\\det(A) = ad - bc\\): <strong class="font-mono text-base text-brand-600">${det}</strong></p>
+                <p>Transpose Matriks (Aᵀ):</p>
+                <div class="inline-grid grid-cols-2 gap-2 p-2 bg-slate-100 rounded-xl font-mono text-center font-bold text-xs">
+                    <span class="bg-white p-1 rounded">${a}</span>
+                    <span class="bg-white p-1 rounded">${c}</span>
+                    <span class="bg-white p-1 rounded">${b}</span>
+                    <span class="bg-white p-1 rounded">${d}</span>
+                </div>
+                ${inverseHTML}
+            `;
+
+            if (window.MathJax) {
+                MathJax.typesetPromise([resDiv]);
+            }
+        }
+
+        // 3. Trigonometry Calculator
+        function calculateTrig() {
+            const deg = parseFloat(document.getElementById('trig-angle').value) || 0;
+            const rad = deg * (Math.PI / 180);
+
+            const sinVal = Math.sin(rad).toFixed(4);
+            const cosVal = Math.cos(rad).toFixed(4);
+            const tanVal = Math.abs(cosVal) < 0.0001 ? "Tak Terdefinisi (∞)" : Math.tan(rad).toFixed(4);
+
+            const resDiv = document.getElementById('trig-result');
+            resDiv.innerHTML = `
+                <div class="grid grid-cols-3 gap-3 text-center">
+                    <div class="p-3 bg-brand-50 border border-brand-100 rounded-xl">
+                        <span class="text-xs font-semibold text-brand-600">sin(${deg}°)</span>
+                        <p class="text-lg font-bold text-brand-900 mt-1">${sinVal}</p>
+                    </div>
+                    <div class="p-3 bg-brand-50 border border-brand-100 rounded-xl">
+                        <span class="text-xs font-semibold text-brand-600">cos(${deg}°)</span>
+                        <p class="text-lg font-bold text-brand-900 mt-1">${cosVal}</p>
+                    </div>
+                    <div class="p-3 bg-brand-50 border border-brand-100 rounded-xl">
+                        <span class="text-xs font-semibold text-brand-600">tan(${deg}°)</span>
+                        <p class="text-lg font-bold text-brand-900 mt-1">${tanVal}</p>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">Nilai Radian: <span class="font-mono">${rad.toFixed(4)} rad</span></p>
+            `;
+        }
+    </script>
+</body>
+</html>
